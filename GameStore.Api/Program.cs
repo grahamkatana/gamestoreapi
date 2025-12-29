@@ -14,5 +14,11 @@ List<GameDto> games = [
 
 // GET /games
 app.MapGet("/games", () => games);
+// GET /games/{id}
+app.MapGet("/games/{id}", (int id) =>
+{
+    var game = games.FirstOrDefault(g => g.Id == id);
+    return game is not null ? Results.Ok(game) : Results.NotFound();
+});
 
 app.Run();
