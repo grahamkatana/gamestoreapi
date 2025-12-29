@@ -26,3 +26,4 @@
 /Users/grahamkennethkatana/Desktop/c#/gamestoreapi/GameStore.Api/obj/Debug/net10.0/GameStore.Api.pdb
 /Users/grahamkennethkatana/Desktop/c#/gamestoreapi/GameStore.Api/obj/Debug/net10.0/GameStore.Api.genruntimeconfig.cache
 /Users/grahamkennethkatana/Desktop/c#/gamestoreapi/GameStore.Api/obj/Debug/net10.0/ref/GameStore.Api.dll
+/Users/grahamkennethkatana/Desktop/c#/gamestoreapi/GameStore.Api/obj/Debug/net10.0/GameStore.Api.sourcelink.json
