@@ -1,1 +1,12 @@
 *.db
+*.db-shm
+*.db-wal
+bin/
+obj/
+.vs/
+*.user
+DS_Store
+.env
+.env.local
+.env.*.local
+.idea/
