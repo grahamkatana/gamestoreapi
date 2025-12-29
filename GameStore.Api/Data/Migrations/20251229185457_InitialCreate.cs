@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace GameStore.Api.DataMigrations
+namespace GameStore.Api.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
