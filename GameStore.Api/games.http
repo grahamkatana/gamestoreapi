@@ -8,8 +8,19 @@ POST http://localhost:5022/games
 Content-Type: application/json
 
 {
-  "title": "Coding Quest",
+  "title": "Coding  Adventures",
   "genre": "Adventure",
   "price": 59.99,
   "releaseDate": "2024-07-01"
+}
+
+###
+PATCH http://localhost:5022/games/1
+Content-Type: application/json
+
+{
+  "title": "Coding  Adventures Updated",
+  "genre": "Adventure",
+  "price": 49.99,
+  "releaseDate": "2024-07-15"
 }
