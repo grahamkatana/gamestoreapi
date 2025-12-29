@@ -1,5 +1,5 @@
 using GameStore.Api.Dtos;
-
+const string EndpointName = "GetGameById";
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
@@ -14,11 +14,28 @@ List<GameDto> games = [
 
 // GET /games
 app.MapGet("/games", () => games);
+
+
+
 // GET /games/{id}
 app.MapGet("/games/{id}", (int id) =>
 {
     var game = games.FirstOrDefault(g => g.Id == id);
     return game is not null ? Results.Ok(game) : Results.NotFound();
+}).WithName(EndpointName);
+// POST /games
+app.MapPost("/games", (GameCreateDto newGame) =>
+{
+    var nextId = games.Max(g => g.Id) + 1;
+    var gameDto = new GameDto(
+        nextId,
+        newGame.Title,
+        newGame.Genre,
+        newGame.Price,
+        newGame.ReleaseDate
+    );
+    games.Add(gameDto);
+    return Results.CreatedAtRoute(EndpointName, new { id = gameDto.Id }, gameDto);
 });
 
 app.Run();

@@ -2,3 +2,14 @@ GET http://localhost:5022/games
 
 ###
 GET http://localhost:5022/games/1
+
+###
+POST http://localhost:5022/games
+Content-Type: application/json
+
+{
+  "title": "Coding Quest",
+  "genre": "Adventure",
+  "price": 59.99,
+  "releaseDate": "2024-07-01"
+}
