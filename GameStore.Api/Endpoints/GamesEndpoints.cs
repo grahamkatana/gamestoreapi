@@ -1,4 +1,6 @@
+using GameStore.Api.Data;
 using GameStore.Api.Dtos;
+using GameStore.Api.Models;
 
 namespace GameStore.Api.Endpoints;
 
@@ -6,11 +8,11 @@ public static class GamesEndpoints
 {
     const string EndpointName = "GetGameById";
     private static readonly List<GameDto> games = [
-         new (1, "The Legend of Zelda: Breath of the Wild", "Action-adventure", 59.99m, new DateOnly(2017, 3, 3)),
-    new (2, "God of War", "Action-adventure", 49.99m, new DateOnly(2018, 4, 20)),
-    new (3, "Red Dead Redemption 2", "Action-adventure", 69.99m, new DateOnly(2018, 10, 26)),
-    new (4, "Minecraft", "Sandbox", 26.95m, new DateOnly(2011, 11, 18)),
-    new (5, "The Witcher 3: Wild Hunt", "Action RPG", 39.99m, new DateOnly(2015, 5, 19))
+        new (1, "The Legend of Zelda: Breath of the Wild", "Action-adventure", 59.99m, new DateOnly(2017, 3, 3)),
+        new (2, "God of War", "Action-adventure", 49.99m, new DateOnly(2018, 4, 20)),
+        new (3, "Red Dead Redemption 2", "Action-adventure", 69.99m, new DateOnly(2018, 10, 26)),
+        new (4, "Minecraft", "Sandbox", 26.95m, new DateOnly(2011, 11, 18)),
+        new (5, "The Witcher 3: Wild Hunt", "Action RPG", 39.99m, new DateOnly(2015, 5, 19))
      ];
 
     public static void MapGamesEndpoints(this WebApplication app)
@@ -27,18 +29,27 @@ public static class GamesEndpoints
         }).WithName(EndpointName);
 
         // POST /games
-        group.MapPost("/", (GameCreateDto newGame) =>
+        group.MapPost("/", (GameCreateDto newGame, GameStoreContext dbContext) =>
         {
-            var nextId = games.Max(g => g.Id) + 1;
-            var gameDto = new GameDto(
-        nextId,
-        newGame.Title,
-        newGame.Genre,
-        newGame.Price,
-        newGame.ReleaseDate
-    );
-            games.Add(gameDto);
+    
+            Game game = new()
+            {
+                Title = newGame.Title,
+                GenreId = newGame.GenreId,
+                Price = newGame.Price,
+                ReleaseDate = newGame.ReleaseDate
+            };
+            dbContext.Games.Add(game);
+            dbContext.SaveChanges();
+            GameDetailsDto gameDto = new(
+                game.Id,
+                game.Title,
+                game.GenreId,
+                game.Price,
+                game.ReleaseDate
+            );
             return Results.CreatedAtRoute(EndpointName, new { id = gameDto.Id }, gameDto);
+
         });
 
         // PATCH /games/{id}

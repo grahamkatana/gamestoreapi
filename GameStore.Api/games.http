@@ -9,7 +9,7 @@ Content-Type: application/json
 
 {
   "title": "Coding  Adventures",
-  "genre": "Adventure",
+  "genreId": 2,
   "price": 59.99,
   "releaseDate": "2024-07-01"
 }
