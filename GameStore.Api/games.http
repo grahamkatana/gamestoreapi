@@ -20,7 +20,7 @@ Content-Type: application/json
 
 {
   "title": "Coding  Adventures Updated",
-  "genre": "Adventure",
+  "genreId": 3,
   "price": 49.99,
   "releaseDate": "2024-07-15"
 }

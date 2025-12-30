@@ -1,6 +1,7 @@
 using GameStore.Api.Data;
 using GameStore.Api.Dtos;
 using GameStore.Api.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameStore.Api.Endpoints;
 
@@ -19,17 +20,38 @@ public static class GamesEndpoints
     {
         var group = app.MapGroup("/games");
         // GET /games
-        group.MapGet("/", () => games);
+        group.MapGet("/", async (GameStoreContext dbContext) =>
+        {
+            var games = await dbContext.Games.Include(game => game.Genre)
+                .Select(game => new GameDto(
+                    game.Id,
+                    game.Title,
+                    game.Genre!.Name,
+                    game.Price,
+                    game.ReleaseDate
+                ))
+                .ToListAsync();
+            return Results.Ok(games);
+        });
 
         // GET /games/{id}
-        group.MapGet("/{id}", (int id) =>
+        group.MapGet("/{id}", async (int id, GameStoreContext dbContext) =>
         {
-            var game = games.FirstOrDefault(g => g.Id == id);
-            return game is not null ? Results.Ok(game) : Results.NotFound();
+            var game = await dbContext.Games.FindAsync(id);
+
+            return game is not null ? Results.Ok(
+                new GameDetailsDto(
+                    game.Id,
+                    game.Title,
+                    game.GenreId,
+                    game.Price,
+                    game.ReleaseDate
+                )
+            ) : Results.NotFound();
         }).WithName(EndpointName);
 
         // POST /games
-        group.MapPost("/", (GameCreateDto newGame, GameStoreContext dbContext) =>
+        group.MapPost("/", async (GameCreateDto newGame, GameStoreContext dbContext) =>
         {
     
             Game game = new()
@@ -40,7 +62,7 @@ public static class GamesEndpoints
                 ReleaseDate = newGame.ReleaseDate
             };
             dbContext.Games.Add(game);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
             GameDetailsDto gameDto = new(
                 game.Id,
                 game.Title,
@@ -53,28 +75,26 @@ public static class GamesEndpoints
         });
 
         // PATCH /games/{id}
-        group.MapPatch("/{id}", (int id, GameUpdateDto updatedGame) =>
+        group.MapPatch("/{id}", async (int id, GameUpdateDto updatedGame, GameStoreContext dbContext) =>
         {
-
-            var index = games.FindIndex(g => g.Id == id);
-            if (index == -1) return Results.NotFound();
-            games[index] = new GameDto(
-                id,
-                updatedGame.Title,
-                updatedGame.Genre,
-                updatedGame.Price,
-                updatedGame.ReleaseDate
-            );
+            var game = await dbContext.Games.FindAsync(id);
+            if (game is null) return Results.NotFound();
+            game.Title =  updatedGame.Title;
+            game.GenreId = updatedGame.GenreId;
+            game.Price = updatedGame.Price;
+            game.ReleaseDate = updatedGame.ReleaseDate;
+            await dbContext.SaveChangesAsync();
             return Results.Ok();
 
         });
 
         // DELETE /games/{id}
-        group.MapDelete("/{id}", (int id) =>
+        group.MapDelete("/{id}", async (int id, GameStoreContext dbContext) =>
         {
-            var index = games.FindIndex(g => g.Id == id);
-            if (index == -1) return Results.NotFound();
-            games.RemoveAt(index);
+            var game = await dbContext.Games.FindAsync(id);
+            if (game is null) return Results.NotFound();
+            dbContext.Games.Remove(game);
+            await dbContext.SaveChangesAsync();
             return Results.NoContent();
         });
 
